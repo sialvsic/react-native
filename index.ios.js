@@ -11,21 +11,33 @@ import {
   Text,
   View
 } from 'react-native';
+import TopicList from './App/TopicList'
 
 export default class native extends Component {
+  constructor() {
+    super()
+    this.state = {
+      stories: []
+    }
+  }
+
+  componentDidMount() {
+    return fetch('https://news-at.zhihu.com/api/3/stories/latest')
+      .then((response) => response.json())
+      .then((responseJson) => {
+        return this.setState({
+          stories: responseJson.stories
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
+        <TopicList stories={this.state.stories}/>
       </View>
     );
   }
@@ -34,20 +46,9 @@ export default class native extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+    backgroundColor: '#F5F5F5',
+    paddingTop: 22
+  }
 });
 
 AppRegistry.registerComponent('native', () => native);

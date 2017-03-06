@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { TouchableHighlight, View, Image, ListView, StyleSheet, Text } from 'react-native';
 import  moment from 'moment';
 import Icon from 'react-native-vector-icons/Ionicons';
+import ApiRequest from  '../Api/service'
+import { Actions } from 'react-native-router-flux';
 
 export default class TopicList extends Component {
 
@@ -14,15 +16,17 @@ export default class TopicList extends Component {
     this.open = this.open.bind(this)
   }
 
-  componentWillReceiveProps(props) {
-    const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
-    this.setState({
-      dataSource: ds.cloneWithRows(props.blogs)
-    })
+  componentDidMount() {
+    ApiRequest.getBlogs().then((response) => {
+      const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
+      this.setState({
+        dataSource: ds.cloneWithRows(response.data)
+      })
+    });
   }
 
-  open() {
-    console.log('open')
+  open(blog) {
+    Actions.blogDetail({ blogId: blog.Id })
   }
 
 
@@ -34,7 +38,6 @@ export default class TopicList extends Component {
     if (imageUrl.url == 'https://pic.cnblogs.com/face/') {
       imageUrl = require('../Resources/quicksearchbox1.png')
     }
-    // console.log(moment(rowData.PostDate).format("YYYY/MM/DD, HH:mm:ss"))
     return (
       <View style={styles.listItem}>
         <View style={styles.listTop}>
@@ -47,7 +50,7 @@ export default class TopicList extends Component {
             {" " + rowData.ViewCount}
           </Text>
         </View>
-        <TouchableHighlight style={styles.listMiddle} underlayColor="#F8F8F8" onPress={()=>this.open()}>
+        <TouchableHighlight style={styles.listMiddle} underlayColor="#F8F8F8" onPress={()=>this.open(rowData)}>
           <Text style={styles.title} numberOfLines={2}>{rowData.Title || ''}</Text>
         </TouchableHighlight>
 

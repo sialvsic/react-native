@@ -11,33 +11,31 @@ import {
   Text,
   View
 } from 'react-native';
-import TopicList from './App/TopicList'
+import TopicList from './App/Component/TopicList'
+import ApiRequest from  './App/Api/service'
 
 export default class native extends Component {
   constructor() {
     super()
     this.state = {
-      stories: []
+      blogs: []
     }
   }
 
+
   componentDidMount() {
-    return fetch('https://news-at.zhihu.com/api/3/stories/latest')
-      .then((response) => response.json())
-      .then((responseJson) => {
-        return this.setState({
-          stories: responseJson.stories
-        });
+    ApiRequest.getBlogs().then((response) => {
+      // console.log(data)
+      this.setState({
+        blogs: response.data
       })
-      .catch((error) => {
-        console.error(error);
-      });
+    });
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <TopicList stories={this.state.stories}/>
+        <TopicList blogs={this.state.blogs}/>
       </View>
     );
   }
